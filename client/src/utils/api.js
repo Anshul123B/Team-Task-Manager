@@ -63,7 +63,13 @@ export const apiGetProject = (id) =>
     });
 
 export const apiCreateProject = (body) => {
-  if (isDevMockActive()) return devDelay({ _id: '1', ...body });
+  if (isDevMockActive()) return devDelay({
+    _id: `p${Date.now()}`,
+    name: body.name,
+    description: body.description || '',
+    created_by: { _id: 'u1', name: 'Main User', email: 'main@example.com' },
+    members: [ { _id: 'u1', name: 'Main User', email: 'main@example.com' } ]
+  });
   return fetch(`${BASE_URL}/api/projects`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body) }).then(handleResponse);
 };
 
@@ -102,7 +108,21 @@ export const apiGetTask = (id) => {
 };
 
 export const apiCreateTask = (body) => {
-  if (isDevMockActive()) return devDelay({ _id: `t${Date.now()}`, status: body.status || 'todo', priority: body.priority || 'low', ...body });
+  if (isDevMockActive()) return devDelay(() => {
+    const id = `t${Date.now()}`;
+    const assigned = body.assigned_to ? (typeof body.assigned_to === 'object' ? body.assigned_to : { _id: body.assigned_to, name: 'Member' }) : { _id: 'u1', name: 'Main User' };
+    return {
+      _id: id,
+      title: body.title || 'Untitled Task',
+      description: body.description || '',
+      priority: body.priority || 'low',
+      due_date: body.due_date || null,
+      status: body.status || 'todo',
+      assigned_to: assigned,
+      project_id: body.project_id || null,
+      created_by: { _id: 'u1', name: 'Main User' }
+    };
+  }).then(res => res);
   return fetch(`${BASE_URL}/api/tasks`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body) }).then(handleResponse);
 };
 
