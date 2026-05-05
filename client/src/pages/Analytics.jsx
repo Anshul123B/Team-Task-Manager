@@ -1,3 +1,4 @@
+// Team Task Manager — Analytics page: renders charts and summary metrics
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {

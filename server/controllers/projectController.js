@@ -1,3 +1,4 @@
+// Team Task Manager — project controller: project CRUD and member management
 const Project = require('../models/Project');
 const User = require('../models/User');
 

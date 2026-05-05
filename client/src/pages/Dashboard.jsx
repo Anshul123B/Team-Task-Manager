@@ -1,3 +1,4 @@
+// Team Task Manager — Dashboard page: main app UI (projects, board, members)
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import KanbanBoard from '../components/KanbanBoard';

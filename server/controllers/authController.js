@@ -1,3 +1,4 @@
+// Team Task Manager — auth controller: signup & login handlers
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
@@ -26,11 +27,11 @@ const signup = async (req, res) => {
 
     if (user) {
       res.status(201).json({
-        _id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        token: generateToken(user._id),
+          _id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          token: generateToken(user._id),
       });
     } else {
       res.status(400).json({ message: 'Invalid user data' });

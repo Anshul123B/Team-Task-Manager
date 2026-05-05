@@ -1,3 +1,4 @@
+// Team Task Manager — TaskModal component: UI and logic to create tasks
 import React, { useState } from 'react';
 import { apiCreateTask } from '../utils/api';
 

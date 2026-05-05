@@ -1,3 +1,4 @@
+// Team Task Manager — KanbanBoard component: renders task columns and cards
 import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth';
 

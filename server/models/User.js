@@ -1,3 +1,4 @@
+// Team Task Manager — User model: defines user schema and password helpers
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 

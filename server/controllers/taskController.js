@@ -1,3 +1,4 @@
+// Team Task Manager — task controller: task CRUD and status updates
 const Task = require('../models/Task');
 const Project = require('../models/Project');
 

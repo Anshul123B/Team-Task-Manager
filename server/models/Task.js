@@ -1,3 +1,4 @@
+// Team Task Manager — Task model: defines task schema and metadata
 const mongoose = require('mongoose');
 
 const taskSchema = new mongoose.Schema({

@@ -1,3 +1,4 @@
+// Team Task Manager — Login page: handles user sign-in UI and local dev autofill
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { apiLogin } from '../utils/api';

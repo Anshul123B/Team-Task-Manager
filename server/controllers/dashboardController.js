@@ -1,3 +1,4 @@
+// Team Task Manager — dashboard controller: analytics + aggregated stats
 const Task = require('../models/Task');
 const Project = require('../models/Project');
 

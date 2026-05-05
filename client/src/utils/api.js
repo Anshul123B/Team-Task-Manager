@@ -1,5 +1,8 @@
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
+// Team Task Manager — central API utility: fetch wrappers and dev mocks
+// Central API utility – reads VITE_API_URL from .env (falls back to localhost)
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const isDevMockActive = () => typeof window !== 'undefined' && localStorage.getItem('token') === 'dev-token';
 
 const devDelay = (v) => new Promise((res) => setTimeout(() => res(v), 150));

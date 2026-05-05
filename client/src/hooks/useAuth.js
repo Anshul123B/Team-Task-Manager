@@ -1,3 +1,4 @@
+// Team Task Manager — auth helper hook: reads user from localStorage and exposes permissions
 import { useMemo } from 'react';
 
 

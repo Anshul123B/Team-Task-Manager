@@ -1,3 +1,4 @@
+// Team Task Manager — Project model: project schema and relations
 const mongoose = require('mongoose');
 
 const projectSchema = new mongoose.Schema({

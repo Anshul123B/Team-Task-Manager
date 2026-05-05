@@ -1,3 +1,4 @@
+// Team Task Manager — Express server entry: sets up middleware and routes
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
