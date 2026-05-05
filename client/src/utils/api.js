@@ -5,6 +5,23 @@ const isDevMockActive = () => typeof window !== 'undefined' && localStorage.getI
 
 const devDelay = (v) => new Promise((res) => setTimeout(() => res(v), 150));
 
+// In-memory dev store used when dev-mode is active. Keeps created projects/tasks visible
+const devStore = {
+  projects: [
+    {
+      _id: 'p_demo',
+      name: 'Demo Project',
+      description: 'This is a demo project.',
+      created_by: { _id: 'u1', name: 'Main User', email: 'main@example.com' },
+      members: [{ _id: 'u1', name: 'Main User', email: 'main@example.com' }]
+    }
+  ],
+  tasks: [
+    { _id: 't_demo_1', title: 'Demo Task 1', description: 'This is a demo task.', status: 'in-progress', assigned_to: { _id: 'u1', name: 'Main User' }, project_id: 'p_demo' },
+    { _id: 't_demo_2', title: 'Demo Task 2', description: 'Another demo task.', status: 'done', assigned_to: { _id: 'u1', name: 'Main User' }, project_id: 'p_demo' }
+  ]
+};
+
 const getAuthHeaders = () => {
   const token = localStorage.getItem('token');
   return {
@@ -31,36 +48,21 @@ export const apiGetMe = () => {
 };
 
 export const apiGetProjects = () =>
-  fetch(`${BASE_URL}/api/projects`, { headers: getAuthHeaders() })
+  (isDevMockActive() ? devDelay(devStore.projects) : fetch(`${BASE_URL}/api/projects`, { headers: getAuthHeaders() })
     .then(async (res) => {
-      if (res.status === 401) {
-        return [
-          {
-            _id: '1',
-            name: 'Demo Project',
-            description: 'This is a demo project.',
-            created_by: { _id: 'u1', name: 'Main User', email: 'main@example.com' },
-            members: [ { _id: 'u1', name: 'Main User', email: 'main@example.com' } ]
-          }
-        ];
-      }
+      if (res.status === 401) return devStore.projects;
       return handleResponse(res);
-    });
+    }));
 
 export const apiGetProject = (id) =>
-  fetch(`${BASE_URL}/api/projects/${id}`, { headers: getAuthHeaders() })
-    .then(async (res) => {
-      if (res.status === 401) {
-        return {
-          _id: '1',
-          name: 'Demo Project',
-          description: 'This is a demo project.',
-          created_by: { _id: 'u1', name: 'Main User', email: 'main@example.com' },
-          members: [ { _id: 'u1', name: 'Main User', email: 'main@example.com' } ]
-        };
-      }
-      return handleResponse(res);
-    });
+  (isDevMockActive()
+    ? devDelay(devStore.projects.find(p => p._id === id) || devStore.projects[0])
+    : fetch(`${BASE_URL}/api/projects/${id}`, { headers: getAuthHeaders() })
+      .then(async (res) => {
+        if (res.status === 401) return devStore.projects[0];
+        return handleResponse(res);
+      })
+  );
 
 export const apiCreateProject = (body) => {
   if (isDevMockActive()) return devDelay({
@@ -84,12 +86,24 @@ export const apiDeleteProject = (id) => {
 };
 
 export const apiAddMember = (id, body) => {
-  if (isDevMockActive()) return devDelay({ success: true });
+  if (isDevMockActive()) {
+    const user = { _id: `u${Date.now()}`, name: body.name || body.email.split('@')[0], email: body.email };
+    const project = devStore.projects.find(p => p._id === id);
+    if (project && !project.members.find(m => m.email === user.email)) project.members.push(user);
+    return devDelay({ success: true, project });
+  }
   return fetch(`${BASE_URL}/api/projects/${id}/members`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body) }).then(handleResponse);
 };
 
 export const apiGetTasks = (params = {}) => {
   const query = new URLSearchParams(params).toString();
+  if (isDevMockActive()) {
+    const filtered = devStore.tasks.filter(t => {
+      if (params.project_id) return t.project_id === params.project_id;
+      return true;
+    });
+    return devDelay(filtered);
+  }
   return fetch(`${BASE_URL}/api/tasks${query ? `?${query}` : ''}`, { headers: getAuthHeaders() })
     .then(async (res) => {
       if (res.status === 401) {
@@ -108,10 +122,10 @@ export const apiGetTask = (id) => {
 };
 
 export const apiCreateTask = (body) => {
-  if (isDevMockActive()) return devDelay(() => {
+  if (isDevMockActive()) {
     const id = `t${Date.now()}`;
     const assigned = body.assigned_to ? (typeof body.assigned_to === 'object' ? body.assigned_to : { _id: body.assigned_to, name: 'Member' }) : { _id: 'u1', name: 'Main User' };
-    return {
+    const task = {
       _id: id,
       title: body.title || 'Untitled Task',
       description: body.description || '',
@@ -122,7 +136,9 @@ export const apiCreateTask = (body) => {
       project_id: body.project_id || null,
       created_by: { _id: 'u1', name: 'Main User' }
     };
-  }).then(res => res);
+    devStore.tasks.unshift(task);
+    return devDelay(task);
+  }
   return fetch(`${BASE_URL}/api/tasks`, { method: 'POST', headers: getAuthHeaders(), body: JSON.stringify(body) }).then(handleResponse);
 };
 
