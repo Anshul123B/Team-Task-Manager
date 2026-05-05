@@ -6,7 +6,12 @@ const connectDB = require('./config/db');
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.CLIENT_ORIGIN || 'https://your-frontend.vercel.app',
+    credentials: true
+  })
+);
 app.use(express.json()); // Parses incoming JSON requests
 
 connectDB();
